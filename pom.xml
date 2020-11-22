@@ -39,11 +39,16 @@
                     <version>2.2.0</version>
                     <configuration>
                         <includeDependency>false</includeDependency>
+                        <!--                        <injar>${project.build.finalName}.${project.packaging}</injar>-->
+                        <!--                        <outjar>${project.build.finalName}-proguard.${project.packaging}</outjar>-->
                         <options>
                             <option>-keepclasseswithmembers public class * { public static void
                                 main(java.lang.String[]); }
                             </option>
-
+                            <option>-keepattributes Signature</option>
+                            <option>-keepclasseswithmembers public class com.git.reflection.model.Che{*;}</option>
+                            <option>-keepattributes *Annotation*</option>
+                            <option>-keepattributes InnerClasses,EnclosingMethod</option>
                         </options>
                     </configuration>
                     <dependencies>
@@ -66,6 +71,81 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce-dependency-convergence</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                            <rules>
+                                <dependencyConvergence/>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-require-java-version-to-[1.8.0,)</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[1.8.0,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-require-maven-version-to-[3.3.9,)</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.3.9,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>tidy-maven-plugin</artifactId>
+                <version>1.1.0</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.git.common.Application</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assembly</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
@@ -84,6 +164,25 @@
                                 <lib>${java.home}/lib/rt.jar</lib>
                                 <lib>${java.home}/lib/jce.jar</lib>
                                 <lib>${java.home}/lib/jsse.jar</lib>
+                            </libs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>java9+</id>
+            <activation>
+                <jdk>[1.9,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.wvengen</groupId>
+                        <artifactId>proguard-maven-plugin</artifactId>
+                        <configuration>
+                            <libs>
+                                <lib>${java.home}/jmods/java.base.jmod</lib>
                             </libs>
                         </configuration>
                     </plugin>
