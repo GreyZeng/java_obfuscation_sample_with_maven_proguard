@@ -47,6 +47,9 @@
                             </option>
                             <option>-keepattributes Signature</option>
                             <option>-keepclasseswithmembers public class com.git.reflection.model.Che{*;}</option>
+                            <option>-keep class com.git.spi.** {
+                                *;
+                                }</option>
                             <option>-keepattributes *Annotation*</option>
                             <option>-keepattributes InnerClasses,EnclosingMethod</option>
                         </options>

@@ -4,6 +4,9 @@ import com.git.callback.XiaoMing;
 import com.git.enu.Color;
 import com.git.inner.School;
 import com.git.reflection.ReflectTest;
+import com.git.spi.Animal;
+
+import java.util.ServiceLoader;
 
 public class Application {
 
@@ -67,6 +70,13 @@ public class Application {
 
         XiaoMing xm = new XiaoMing();
         xm.eatFood();
+
+
+        System.out.println("Hello World!");
+        ServiceLoader<Animal> serviceLoader = ServiceLoader.load(Animal.class);
+        for (Animal animal : serviceLoader) {
+            animal.eat();
+        }
 
     }
 
